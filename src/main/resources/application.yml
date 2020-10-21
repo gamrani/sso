@@ -1,0 +1,12 @@
+server:
+  port: 8081
+keycloak:
+  realm: sso-realm
+  auth-server-url: http://localhost:8080/auth
+  ssl-required: external
+  resource: sso-app
+  use-resource-role-mappings: true
+  bearer-only: true
+spring:
+  application:
+    name: sso
