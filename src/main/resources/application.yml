@@ -7,10 +7,14 @@ keycloak:
   bearer-only: true
   enable-basic-auth: false
 
+
 credentials:
   keycloak:
     client: realm-management
     secret: ae46122a-4398-45ce-8530-ff11a74e66af
+    sso:
+      client: sso-app
+      secret: 0a23eb14-0531-404c-94cb-6ee4efee3ba5
 
 spring:
   application:
