@@ -2,9 +2,9 @@ package com.sso.service;
 
 import com.sso.builder.KeycloakBuilder;
 import com.sso.dto.UserRegistrationDTO;
+import com.sso.mapper.UserCredentialsMapper;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.admin.client.resource.UsersResource;
-import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.slf4j.Logger;
@@ -18,21 +18,21 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class UserService {
+public class UserCredentialsService {
 
     private final KeycloakBuilder builder;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserCredentialsService.class);
 
     @Autowired
-    public UserService(KeycloakBuilder builder) {
+    public UserCredentialsService(KeycloakBuilder builder) {
         this.builder = builder;
     }
 
     public ResponseEntity<?> registration(UserRegistrationDTO dto) throws Exception {
         UsersResource usersResource = builder.getUsersResource();
 
-        UserRepresentation user = getUserRepresentation(dto);
+        UserRepresentation user = UserCredentialsMapper.mapToUserRepresentation(dto);
 
         Response response = usersResource.create(user);
 
@@ -51,22 +51,8 @@ public class UserService {
         return ResponseEntity.ok(dto);
     }
 
-    private UserRepresentation getUserRepresentation(UserRegistrationDTO dto) {
-        UserRepresentation user = new UserRepresentation();
-        user.setEnabled(true);
-        user.setUsername(dto.getFirstName()+dto.getLastName());
-        user.setFirstName(dto.getFirstName());
-        user.setLastName(dto.getLastName());
-        user.setEmail(dto.getEmail());
-        CredentialRepresentation passwordCred = new CredentialRepresentation();
-        passwordCred.setTemporary(false);
-        passwordCred.setType(CredentialRepresentation.PASSWORD);
-        passwordCred.setValue(dto.getPassword());
-        user.setCredentials(Collections.singletonList(passwordCred));
-        return user;
-    }
 
-    public void addUserRoles(String userName, List<String> roles) throws Exception {
+    private void addUserRoles(String userName, List<String> roles) throws Exception {
         LOGGER.debug("Add Role to User {}", userName);
         UserResource userResource = findUserResourceByUsername(userName);
         List<RoleRepresentation> availableRoles = userResource.roles().realmLevel().listAvailable();
@@ -97,13 +83,5 @@ public class UserService {
                         .findFirst()
                         .orElseThrow(() -> new Exception("username.doesnt.exit"));
         return usersRessource.get(userRepresentation.getId());
-    }
-
-    private CredentialRepresentation generateCredential(String password) {
-        CredentialRepresentation passwordCred = new CredentialRepresentation();
-        passwordCred.setTemporary(false);
-        passwordCred.setType(CredentialRepresentation.PASSWORD);
-        passwordCred.setValue(password);
-        return passwordCred;
     }
 }
