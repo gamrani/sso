@@ -1,5 +1,7 @@
 package com.sso.config;
 
+import org.keycloak.adapters.KeycloakConfigResolver;
+import org.keycloak.adapters.springboot.KeycloakSpringBootConfigResolver;
 import org.keycloak.adapters.springsecurity.KeycloakSecurityComponents;
 import org.keycloak.adapters.springsecurity.authentication.KeycloakAuthenticationProvider;
 import org.keycloak.adapters.springsecurity.config.KeycloakWebSecurityConfigurerAdapter;
@@ -17,6 +19,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.authority.mapping.SimpleAuthorityMapper;
@@ -38,8 +41,35 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/user/unprotected-data", "/user/create","/user/signin").permitAll()
+                .antMatchers("/user/unprotected-data", "/user/registration","/user/signin").permitAll()
                 .anyRequest().authenticated();
+    }
+
+    @Override
+    public void configure(WebSecurity web) {
+        web.ignoring()
+                .antMatchers(
+                        "/v2/api-docs",
+                        "/configuration/ui",
+                        "/swagger-resources/**",
+                        "/configuration/**",
+                        "/swagger-ui.html",
+                        "/webjars/**",
+                        "/health",
+                        "/metrics",
+                        "/info",
+                        "/env",
+                        "/dump",
+                        "/trace",
+                        "/logfile",
+                        "/heapdump",
+                        "/jolokia/**",
+                        "/loggers/**",
+                        "/flyway",
+                        "/liquibase",
+                        "/auditevents",
+                        "/actuator/**",
+                        "/h2/**");
     }
 
     @Override
@@ -92,6 +122,11 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
         registrationBean.setEnabled(false);
 
         return registrationBean;
+    }
+
+    @Bean
+    public KeycloakConfigResolver KeycloakConfigResolver() {
+        return new KeycloakSpringBootConfigResolver();
     }
 
     @Bean
