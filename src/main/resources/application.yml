@@ -1,5 +1,10 @@
 server:
   port: 8888
+
+spring:
+  application:
+    name: sso
+
 keycloak:
   realm: sso-realm
   auth-server-url: http://localhost:8081/auth
@@ -15,7 +20,3 @@ credentials:
     sso:
       client: sso-app
       secret: 0a23eb14-0531-404c-94cb-6ee4efee3ba5
-
-spring:
-  application:
-    name: sso

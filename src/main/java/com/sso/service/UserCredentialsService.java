@@ -44,7 +44,7 @@ public class UserCredentialsService {
         this.builder = builder;
     }
 
-    public ResponseEntity<?> signin(UserLoginDTO dto) {
+    public ResponseEntity<?> signIn(UserLoginDTO dto) {
 
         Map<String, Object> clientCredentials = new HashMap<>();
         clientCredentials.put("secret", clientSecret);
@@ -105,11 +105,11 @@ public class UserCredentialsService {
     }
 
     private UserResource findUserResourceByUsername(String userName) throws Exception {
-        UsersResource usersRessource = builder.getUsersResource();
+        UsersResource usersResource = builder.getUsersResource();
         UserRepresentation userRepresentation =
-                usersRessource.search(userName).stream()
+                usersResource.search(userName).stream()
                         .findFirst()
                         .orElseThrow(() -> new Exception("username.doesnt.exit"));
-        return usersRessource.get(userRepresentation.getId());
+        return usersResource.get(userRepresentation.getId());
     }
 }

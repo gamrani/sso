@@ -25,7 +25,7 @@ public class UserController {
 
     @PostMapping("/signin")
     public ResponseEntity<?> signin(@RequestBody UserLoginDTO dto) throws Exception {
-        return service.signin(dto);
+        return service.signIn(dto);
     }
 
     @GetMapping("/unprotected-data")
